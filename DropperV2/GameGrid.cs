@@ -24,5 +24,20 @@
             position.Col >= 0 && position.Col < Cols;
 
         public bool EmptyCell(Position position) => InGrid(position) && grid[position.Row, position.Col] == 0;
+
+        public void Clear()
+        {
+            for (int r = 0; r < Rows; r++)
+                for (int c = 0; c < Cols; c++)
+                    this[r, c] = (int)GridValue.Empty;
+        }
+
+        public void ClearPlayer()
+        {
+            for (int r = 0; r < Rows; r++)
+                for (int c = 0; c < Cols; c++)
+                    if (this[r, c] == (int)GridValue.Player)
+                        this[r, c] = (int)GridValue.Empty;
+        }
     }
 }

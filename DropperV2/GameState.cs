@@ -22,35 +22,50 @@
 
         private void AddPlayer()
         {
-            Player = new Player(2);
+            Player = new Player();
+            CenterPlayer();
+        }
 
-            int startRow = Grid.Rows / 2 - Player.WidthHeight / 2;
-            int startCol = Grid.Cols / 2 - Player.WidthHeight / 2;
-
-            int i = 0;
-            for (int r = startRow; r < startRow + Player.WidthHeight; r++)
-            {
-                for (int c = startCol; c < startCol + Player.WidthHeight; c++)
-                {
-                    Grid[r, c] = (int)GridValue.Player;
-                    Player.PlayerTiles[i] = (new Position(r, c));
-                    i++;
-                }
-            }
+        public void CenterPlayer()
+        {
+            Player.Move(11, 14);
         }
 
         public bool PlayerCanFit()
         {
-            foreach (Position p in Player.PlayerTiles)
+            foreach (Position p in Player.TilePositions())
                 if (!Grid.EmptyCell(p))
                     return false;
             return true;
         }
 
+
+        public void MovePlayerUp()
+        {
+            Player.Move(-1, 0);
+            if (!PlayerCanFit())
+                Player.Move(1, 0);
+        }
+
         public void MovePlayerLeft()
         {
-            //if(PlayerCanFit())
+            Player.Move(0, -1);
+            if (!PlayerCanFit())
+                Player.Move(0, 1);
+        }
 
+        public void MovePlayerDown()
+        {
+            Player.Move(1, 0);
+            if (!PlayerCanFit())
+                Player.Move(-1, 0);
+        }
+
+        public void MovePlayerRight()
+        {
+            Player.Move(0, 1);
+            if (!PlayerCanFit())
+                Player.Move(0, -1);
         }
     }
 }

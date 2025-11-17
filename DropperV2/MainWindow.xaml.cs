@@ -20,6 +20,7 @@ namespace DropperV2
         private Dictionary<GridValue, SolidColorBrush> gridValueToFill;
         private GameState gameState;
 
+        private readonly HashSet<Key> PressedKeys = new();
 
         private void Form_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -126,38 +127,48 @@ namespace DropperV2
             }
         }
 
+        private void DrawPlayer()
+        {
+            foreach (Position p in gameState.Player.TilePositions())
+                gridRects[p.Row, p.Col].Fill = gridValueToFill[GridValue.Player];
+        }
+
         private void Draw()
         {
             DrawGrid();
-            //TODO
+            DrawPlayer();
         }
 
         private async Task GameLoop()
         {
-            Draw();
-            //TODO
+            while (!gameState.GameOver)
+            {
+                HandleWASD();
+                Draw();
+                await Task.Delay(16);
+            }
         }
 
         private async Task RunGame()
         {
             Draw();
             await GameLoop();
-            //TODO
-        }
-
-        private async void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.W:
-                    //gameState.Player.tran
-                    break;
-            }
         }
 
         private async void GameGrid_Loaded(object sender, RoutedEventArgs e)
         {
             await RunGame();
         }
+
+        private void HandleWASD()
+        {
+            if (PressedKeys.Contains(Key.W)) gameState.MovePlayerUp();
+            if (PressedKeys.Contains(Key.A)) gameState.MovePlayerLeft();
+            if (PressedKeys.Contains(Key.S)) gameState.MovePlayerDown();
+            if (PressedKeys.Contains(Key.D)) gameState.MovePlayerRight();
+        }
+
+        private async void Window_KeyDown(object sender, KeyEventArgs e) => PressedKeys.Add(e.Key);
+        private void Window_KeyUp(object sender, KeyEventArgs e) => PressedKeys.Remove(e.Key);
     }
 }

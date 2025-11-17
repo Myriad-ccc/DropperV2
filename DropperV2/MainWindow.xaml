@@ -12,6 +12,7 @@
     FontFamily="VCR OSD Mono"
     Foreground="White"
     KeyDown="Window_KeyDown"
+    KeyUp="Window_KeyUp"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen"
