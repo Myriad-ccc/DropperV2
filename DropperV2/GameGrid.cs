@@ -25,19 +25,53 @@
 
         public bool EmptyCell(Position position) => InGrid(position) && grid[position.Row, position.Col] == 0;
 
-        public void Clear()
+        public void Clear(GridValue? type = null)
         {
             for (int r = 0; r < Rows; r++)
                 for (int c = 0; c < Cols; c++)
-                    this[r, c] = (int)GridValue.Empty;
+                    if (type == null)
+                        this[r, c] = (int)GridValue.Empty;
+                    else
+                        if (this[r, c] == (int)type)
+                        this[r, c] = (int)GridValue.Empty;
         }
 
-        public void ClearPlayer()
+        public bool EntityCanFit(Entity entity)
         {
-            for (int r = 0; r < Rows; r++)
-                for (int c = 0; c < Cols; c++)
-                    if (this[r, c] == (int)GridValue.Player)
-                        this[r, c] = (int)GridValue.Empty;
+            foreach (Position p in entity.TilePositions())
+                if (!EmptyCell(p))
+                    return false;
+            return true;
+        }
+
+        public void UpdateGridValue(Entity entity, GridValue type)
+        {
+            foreach (Position p in entity.TilePositions())
+                this[p.Row, p.Col] = (int)type;
+        }
+
+        public void TryMoveEntityBy(Entity entity, GridValue type, int rowOffset, int colOffset)
+        {
+            Clear(type);
+
+            entity.MoveBy(rowOffset, colOffset);
+            if (!EntityCanFit(entity))
+                entity.MoveBy(-rowOffset, -colOffset);
+
+            UpdateGridValue(entity, type);
+        }
+
+        public void TryMoveEntityTo(Entity entity, GridValue type, int row, int col)
+        {
+            Clear(type);
+
+            Position old = entity.Offset;
+
+            entity.SetPos(row, col);
+            if (!EntityCanFit(entity))
+                entity.Offset = old;
+
+            UpdateGridValue(entity, type);
         }
     }
 }

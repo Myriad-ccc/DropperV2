@@ -2,70 +2,59 @@
 {
     public class GameState
     {
+        private readonly Random random = new();
+
         public int Rows { get; }
         public int Cols { get; }
         public GameGrid Grid { get; }
         public Direction Direction { get; private set; }
         public bool GameOver { get; private set; }
         public int Score { get; private set; }
-        public Player Player { get; private set; }
 
-        public GameState(int rows, int cols)
+        public Player Player { get; private set; }
+        public Wall Wall { get; private set; }
+
+        public List<Player> players = [];
+        public List<Wall> enemies = [];
+
+        public GameState(int gridSize = 1)
         {
-            Rows = rows;
-            Cols = cols;
-            Grid = new GameGrid(rows, cols);
+            Rows = gridSize * 3;
+            Cols = gridSize * 4;
+            Grid = new GameGrid(Rows, Cols);
             Direction = Direction.Right;
 
             AddPlayer();
+            AddWall();
         }
 
         private void AddPlayer()
         {
-            Player = new Player();
-            CenterPlayer();
+            Player = new Player(5, 5);
+            players.Add(Player);
+            CenterEntity(Player, GridValue.Player);
+            Grid.UpdateGridValue(Player, GridValue.Player);
         }
 
-        public void CenterPlayer()
+        private void MovePlayer(int rowOffset, int colOffset) => Grid.TryMoveEntityBy(Player, GridValue.Player, rowOffset, colOffset);
+
+        public void MovePlayerLeft() => MovePlayer(0, -1);
+        public void MovePlayerRight() => MovePlayer(0, 1);
+        public void MovePlayerUp() => MovePlayer(-1, 0);
+        public void MovePlayerDown() => MovePlayer(1, 0);
+
+        private void AddWall()
         {
-            Player.Move(11, 14);
+            Wall = new Wall(random.Next(2, 8), random.Next(1, 4));
+            enemies.Add(Wall);
+
+            do
+                Wall.Offset = new Position(Player.Offset.Row + random.Next(-Rows / 2, Rows / 2), Player.Offset.Col + random.Next(-Cols / 2, Cols / 2));
+            while (!Grid.EntityCanFit(Wall));
+
+            Grid.UpdateGridValue(Wall, GridValue.Wall);
         }
 
-        public bool PlayerCanFit()
-        {
-            foreach (Position p in Player.TilePositions())
-                if (!Grid.EmptyCell(p))
-                    return false;
-            return true;
-        }
-
-
-        public void MovePlayerUp()
-        {
-            Player.Move(-1, 0);
-            if (!PlayerCanFit())
-                Player.Move(1, 0);
-        }
-
-        public void MovePlayerLeft()
-        {
-            Player.Move(0, -1);
-            if (!PlayerCanFit())
-                Player.Move(0, 1);
-        }
-
-        public void MovePlayerDown()
-        {
-            Player.Move(1, 0);
-            if (!PlayerCanFit())
-                Player.Move(-1, 0);
-        }
-
-        public void MovePlayerRight()
-        {
-            Player.Move(0, 1);
-            if (!PlayerCanFit())
-                Player.Move(0, -1);
-        }
+        public void CenterEntity(Entity entity, GridValue type) => Grid.TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, Cols / 2 - entity.Width / 2);
     }
 }

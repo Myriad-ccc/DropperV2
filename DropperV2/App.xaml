@@ -8,7 +8,7 @@
         <SolidColorBrush x:Key="ClosingColor">#9c150e</SolidColorBrush>
         <SolidColorBrush x:Key="MinimizeColor">#1566bd</SolidColorBrush>
 
-        <SolidColorBrush x:Key="TileBorder" Color="#282828" />
+        <SolidColorBrush x:Key="Tile.Border" Color="#282828" />
         <SolidColorBrush x:Key="Tile.Empty" Color="#141414" />
         <SolidColorBrush x:Key="Tile.Player" Color="#33FF33" />
         <SolidColorBrush x:Key="Tile.Enemy" Color="#FF3333" />

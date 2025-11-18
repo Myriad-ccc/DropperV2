@@ -1,8 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
+﻿global using System.Windows;
+global using System.Windows.Controls;
+global using System.Windows.Input;
+global using System.Windows.Media;
+global using System.Windows.Shapes;
 
 namespace DropperV2
 {
@@ -14,10 +14,8 @@ namespace DropperV2
         private bool FormDragging = false;
         private Point DragOffset;
 
-        private int Rows = 24;
-        private int Cols = 30;
-        private Rectangle[,] gridRects;
-        private Dictionary<GridValue, SolidColorBrush> gridValueToFill;
+        private readonly Rectangle[,] gridRects;
+        private readonly Dictionary<GridValue, SolidColorBrush> gridValueToFill;
         private GameState gameState;
 
         private readonly HashSet<Key> PressedKeys = new();
@@ -82,29 +80,30 @@ namespace DropperV2
             TitleText.Foreground = QOL.RandomColor();
             TitleTextShadow.Foreground = QOL.RandomColor();
 
-            gameState = new GameState(Rows, Cols);
+            gameState = new GameState(16);
             gridRects = BuildGameGrid();
         }
 
         private Rectangle[,] BuildGameGrid()
         {
-            GameGrid.Rows = Rows;
-            GameGrid.Columns = Cols;
+            GameGrid.Rows = gameState.Grid.Rows;
+            GameGrid.Columns = gameState.Grid.Cols;
 
-            Rectangle[,] rects = new Rectangle[Rows, Cols];
+            Rectangle[,] rects = new Rectangle[gameState.Grid.Rows, gameState.Grid.Cols];
 
-            int cellSize = 32;
             Brush emptyBrush = gridValueToFill[GridValue.Empty];
+            Brush borderBrush = FindResource("Tile.Border") as SolidColorBrush;
+            double borderThickness = 0.05;
 
-            for (int r = 0; r < Rows; r++)
+            for (int r = 0; r < gameState.Grid.Rows; r++)
             {
-                for (int c = 0; c < Cols; c++)
+                for (int c = 0; c < gameState.Grid.Cols; c++)
                 {
                     Rectangle cell = new()
                     {
-                        Width = cellSize,
-                        Height = cellSize,
                         Fill = emptyBrush,
+                        Stroke = borderBrush,
+                        StrokeThickness = borderThickness,
                         SnapsToDevicePixels = true
                     };
 
@@ -117,9 +116,9 @@ namespace DropperV2
 
         private void DrawGrid()
         {
-            for (int r = 0; r < Rows; r++)
+            for (int r = 0; r < gameState.Grid.Rows; r++)
             {
-                for (int c = 0; c < Cols; c++)
+                for (int c = 0; c < gameState.Grid.Cols; c++)
                 {
                     GridValue gridValue = (GridValue)gameState.Grid[r, c];
                     gridRects[r, c].Fill = gridValueToFill[gridValue];
@@ -127,23 +126,16 @@ namespace DropperV2
             }
         }
 
-        private void DrawPlayer()
-        {
-            foreach (Position p in gameState.Player.TilePositions())
-                gridRects[p.Row, p.Col].Fill = gridValueToFill[GridValue.Player];
-        }
-
         private void Draw()
         {
             DrawGrid();
-            DrawPlayer();
         }
 
         private async Task GameLoop()
         {
             while (!gameState.GameOver)
             {
-                HandleWASD();
+                HandleMovement();
                 Draw();
                 await Task.Delay(16);
             }
@@ -160,15 +152,16 @@ namespace DropperV2
             await RunGame();
         }
 
-        private void HandleWASD()
+        private void HandleMovement()
         {
             if (PressedKeys.Contains(Key.W)) gameState.MovePlayerUp();
             if (PressedKeys.Contains(Key.A)) gameState.MovePlayerLeft();
             if (PressedKeys.Contains(Key.S)) gameState.MovePlayerDown();
             if (PressedKeys.Contains(Key.D)) gameState.MovePlayerRight();
+            if (PressedKeys.Contains(Key.K)) gameState.CenterEntity(gameState.Player, GridValue.Player);
         }
 
-        private async void Window_KeyDown(object sender, KeyEventArgs e) => PressedKeys.Add(e.Key);
+        private void Window_KeyDown(object sender, KeyEventArgs e) => PressedKeys.Add(e.Key);
         private void Window_KeyUp(object sender, KeyEventArgs e) => PressedKeys.Remove(e.Key);
     }
 }
