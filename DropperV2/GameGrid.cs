@@ -73,5 +73,17 @@
 
             UpdateGridValue(entity, type);
         }
+
+        public void CenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, Cols / 2 - entity.Width / 2);
+
+        public void TopLeftEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, 0, 0);
+        public void TopRightEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows - entity.Height, 0);
+        public void BottomLeftEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, 0, Cols - entity.Width);
+        public void BottomRightEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows - entity.Height, Cols - entity.Width);
+
+        public void TopCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, 0, Cols / 2 - entity.Width / 2);
+        public void LeftCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, 0);
+        public void RightCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, Cols - entity.Width);
+        public void BottomCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows - entity.Height, Cols / 2 - entity.Width / 2);
     }
 }

@@ -2,10 +2,13 @@
 {
     public abstract class Entity
     {
-        public int Health { get; set; }
+        private int Health { get; set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
         public Position Offset { get; set; }
+
+        private DateTime LastJump = DateTime.MinValue;
+        public bool CanJump => (DateTime.Now - LastJump).Milliseconds >= 300;
 
         public Entity(int width = 2, int height = 2)
         {
@@ -32,5 +35,7 @@
                 for (int c = 0; c < Width; c++)
                     yield return new Position(Offset.Row + r, Offset.Col + c);
         }
+
+        public async void StartJumpCooldown() => LastJump = DateTime.Now;
     }
 }

@@ -14,8 +14,8 @@
         public Player Player { get; private set; }
         public Wall Wall { get; private set; }
 
-        public List<Player> players = [];
-        public List<Wall> enemies = [];
+        private List<Player> players = [];
+        private List<Wall> enemies = [];
 
         public GameState(int gridSize = 1)
         {
@@ -32,7 +32,7 @@
         {
             Player = new Player(5, 5);
             players.Add(Player);
-            CenterEntity(Player, GridValue.Player);
+            Grid.CenterEntity(Player, GridValue.Player);
             Grid.UpdateGridValue(Player, GridValue.Player);
         }
 
@@ -40,8 +40,17 @@
 
         public void MovePlayerLeft() => MovePlayer(0, -1);
         public void MovePlayerRight() => MovePlayer(0, 1);
-        public void MovePlayerUp() => MovePlayer(-1, 0);
-        public void MovePlayerDown() => MovePlayer(1, 0);
+        public void MovePlayerUp() => MovePlayer(0, 0); //-1,0
+        public void MovePlayerDown() => MovePlayer(0, 0); //1,0
+
+        public void PlayerJump()
+        {
+            if (Player.CanJump)
+            {
+                MovePlayer(-4, 0);
+                Player.StartJumpCooldown();
+            }
+        }
 
         private void AddWall()
         {
@@ -55,6 +64,5 @@
             Grid.UpdateGridValue(Wall, GridValue.Wall);
         }
 
-        public void CenterEntity(Entity entity, GridValue type) => Grid.TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, Cols / 2 - entity.Width / 2);
     }
 }
