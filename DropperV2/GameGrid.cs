@@ -50,13 +50,35 @@
                 this[p.Row, p.Col] = (int)type;
         }
 
-        public void TryMoveEntityBy(Entity entity, GridValue type, int rowOffset, int colOffset)
+        public void MoveEntityBy(Entity entity, GridValue type, int rowOffset, int colOffset)
         {
             Clear(type);
 
-            entity.MoveBy(rowOffset, colOffset);
-            if (!EntityCanFit(entity))
-                entity.MoveBy(-rowOffset, -colOffset);
+            int vertDir = Math.Sign(rowOffset);
+            int vertDist = Math.Abs(rowOffset);
+
+            for (int r = 0; r < vertDist; r++)
+            {
+                entity.MoveBy(vertDir, 0);
+                if (!EntityCanFit(entity))
+                {
+                    entity.MoveBy(-vertDir, -0);
+                    break;
+                }
+            }
+
+            int horDir = Math.Sign(colOffset);
+            int horDist = Math.Abs(colOffset);
+
+            for (int c = 0; c < horDist; c++)
+            {
+                entity.MoveBy(0, horDir);
+                if (!EntityCanFit(entity))
+                {
+                    entity.MoveBy(0, -horDir);
+                    break;
+                }
+            }
 
             UpdateGridValue(entity, type);
         }
@@ -85,5 +107,38 @@
         public void LeftCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, 0);
         public void RightCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows / 2 - entity.Height / 2, Cols - entity.Width);
         public void BottomCenterEntity(Entity entity, GridValue type) => TryMoveEntityTo(entity, type, Rows - entity.Height, Cols / 2 - entity.Width / 2);
+
+        public bool EntityAirborne(Entity entity)
+        {
+            int rowBelow = entity.Offset.Row + entity.Height;
+
+            if (rowBelow >= Rows)
+                return false;
+
+            for (int c = 0; c < entity.Width; c++)
+                if (this[rowBelow, entity.Offset.Col + c] != (int)GridValue.Empty)
+                    return false;
+
+            return true;
+        }
+
+        public async Task EntityGravity(Entity entity, GridValue type)
+        {
+            while (EntityAirborne(entity))
+            {
+                MoveEntityBy(entity, type, 1, 0);
+                await Task.Delay(75);
+            }
+        }
+
+        public async void EntityJump(Entity entity, GridValue type)
+        {
+            if (!EntityAirborne(entity))
+            {
+                MoveEntityBy(entity, type, -entity.JumpHeight, 0);
+                await Task.Delay(100);
+                await EntityGravity(entity, type);
+            }
+        }
     }
 }

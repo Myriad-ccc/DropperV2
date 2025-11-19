@@ -121,9 +121,8 @@
             BorderThickness="1"
             RenderOptions.BitmapScalingMode="HighQuality"
             SnapsToDevicePixels="True">
-            
-            <UniformGrid x:Name="GameGrid" 
-                         Loaded="GameGrid_Loaded" />
+
+            <UniformGrid x:Name="GameGrid" Loaded="GameGrid_Loaded" />
         </Border>
 
         <Grid
@@ -132,7 +131,5 @@
             MouseDown="Form_MouseDown"
             MouseMove="Form_MouseMove"
             MouseUp="Form_MouseUp" />
-        <CheckBox Content="CheckBox" HorizontalAlignment="Left" Margin="1071,262,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-
     </Grid>
 </Window>

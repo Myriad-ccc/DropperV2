@@ -8,11 +8,15 @@
         <SolidColorBrush x:Key="ClosingColor">#9c150e</SolidColorBrush>
         <SolidColorBrush x:Key="MinimizeColor">#1566bd</SolidColorBrush>
 
-        <SolidColorBrush x:Key="Tile.Empty" Color="#141414" />
-        <SolidColorBrush x:Key="Player.Border" Color="#6495ED" />
-        <SolidColorBrush x:Key="Tile.Player" Color="#305CDE" />
-        <SolidColorBrush x:Key="Tile.Enemy" Color="#FF3333" />
-        <SolidColorBrush x:Key="Tile.Coin" Color="#FFFF33" />
-        <SolidColorBrush x:Key="Tile.Wall" Color="#808080" />
+        <SolidColorBrush x:Key="TileEmpty" Color="#141414" />
+        
+        <SolidColorBrush x:Key="TilePlayer" Color="#305CDE" />
+        <SolidColorBrush x:Key="TilePlayerBorder" Color="#6495ED" />
+        <SolidColorBrush x:Key="TileEnemy" Color="#DE3030" />
+        <SolidColorBrush x:Key="TileEnemyBorder" Color="#ED6473" />
+
+        <SolidColorBrush x:Key="placeholder" Color="#FF3333" />
+        <SolidColorBrush x:Key="TileCoin" Color="#FFFF33" />
+        <SolidColorBrush x:Key="TileWall" Color="#808080" />
     </Application.Resources>
 </Application>

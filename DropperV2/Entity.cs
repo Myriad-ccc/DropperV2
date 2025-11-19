@@ -6,15 +6,23 @@
         public int Width { get; private set; }
         public int Height { get; private set; }
         public Position Offset { get; set; }
+        public bool Gravity { get; set; }
 
-        private DateTime LastJump = DateTime.MinValue;
-        public bool CanJump => (DateTime.Now - LastJump).Milliseconds >= 300;
+        public int JumpHeight { get; set; } = 15;
 
-        public Entity(int width = 2, int height = 2)
+        public int CellTop => Offset.Row;
+        public int CellBottom => CellTop + Height - 1;
+        public int CellLeft => Offset.Col;
+        public int CellRight => CellLeft + Width - 1;
+        public double BorderWidth => Math.Pow(Width * Height, 1 / 2.8);
+
+
+        public Entity(int width = 2, int height = 2, bool gravity = true)
         {
             Width = width;
             Height = height;
             Offset = new Position(0, 0);
+            Gravity = gravity;
         }
 
         public void MoveBy(int rows, int cols)
@@ -36,6 +44,12 @@
                     yield return new Position(Offset.Row + r, Offset.Col + c);
         }
 
-        public async void StartJumpCooldown() => LastJump = DateTime.Now;
+        public bool IsAt(int r, int c)
+        {
+            return r >= Offset.Row &&
+                r < Offset.Row + Height &&
+                c >= Offset.Col &&
+                c < Offset.Col + Width;
+        }
     }
 }
